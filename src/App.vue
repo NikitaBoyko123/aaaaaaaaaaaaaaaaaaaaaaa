@@ -248,7 +248,4 @@ export default {
   background-color: rgba(255, 85, 85, 0.1);
 }
 
-.button-plus {
-
-}
 </style>
