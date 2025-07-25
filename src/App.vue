@@ -5,7 +5,7 @@
         v-model="newTask"
         @keyup.enter="addTask"
         placeholder="Add a new task"
-        class="task-input"
+        class="task-input"np
       />
       <button @click="addTask" class="add-btn">
         <img src="@/assets/Plus.svg" alt="Кнопка с картинкой" />
