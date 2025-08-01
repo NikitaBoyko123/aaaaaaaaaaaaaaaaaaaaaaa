@@ -1,37 +1,33 @@
 <template>
-  <div class="input-container">
+  <div class="todo-app__input-container">
     <input
-      v-model="taskText"
+      v-model="newTask"
       placeholder="Add a new task"
-      class="task-input"
-      @keyup.enter="handleAddTask"
+      class="todo-app__task-input"
+      @keyup.enter="addTask"
     />
-    <button @click="handleAddTask" class="add-btn">
-      <img src="@/assets/Plus.svg" alt="Add task" />
+    <button @click="addTask" class="todo-app__add-btn">
+      <img src="@/assets/Plus.svg" alt="Add task" class="todo-app__btn-icon" />
     </button>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      taskText: ""
-    };
-  },
-  methods: {
-    handleAddTask() {
-      if (this.taskText.trim()) {
-        this.$emit('add', this.taskText.trim());
-        this.taskText = '';
-      }
-    }
+<script setup>
+import { ref } from 'vue';
+
+const newTask = ref('');
+const emit = defineEmits(['add-task']);
+
+const addTask = () => {
+  if (newTask.value.trim()) {
+    emit('add-task', newTask.value.trim());
+    newTask.value = "";
   }
 };
 </script>
 
 <style scoped>
-.input-container {
+.todo-app__input-container {
   display: flex;
   font-weight: 16px;
   gap: 10px;
@@ -41,7 +37,7 @@ export default {
   margin-right: 40px;
 }
 
-.task-input {
+.todo-app__task-input {
   flex: 1;
   padding: 12px 16px;
   font-size: 14px;
@@ -54,11 +50,11 @@ export default {
   height: 40px;
 }
 
-.task-input::placeholder {
+.todo-app__task-input::placeholder {
   color: #777;
 }
 
-.add-btn {
+.todo-app__add-btn {
   width: 42px;
   height: 41px;
   border: none;
@@ -76,7 +72,11 @@ export default {
   transition: background-color 0.2s;
 }
 
-.add-btn:hover {
+.todo-app__add-btn:hover {
   background-color: #8b6bbe;
+}
+
+.todo-app__btn-icon {
+  display: block;
 }
 </style>

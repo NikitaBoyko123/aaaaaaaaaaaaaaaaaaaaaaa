@@ -1,68 +1,57 @@
 <template>
   <div class="todo-app">
-    <TaskInput @add="addTask" />
+    <TaskInput @add-task="addTask" />
     
     <TaskList
       title="Tasks to do"
       :tasks="tasksToDo"
-      @complete="completeTask"
-      @delete="deleteTask"
+      @complete-task="completeTask"
+      @delete-task="deleteTask"
     />
     
     <TaskList
       title="Done"
       :tasks="doneTasks"
-      @delete="deleteTask"
+      :is-done="true"
+      @delete-task="deleteTask"
     />
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from 'vue';
 import TaskInput from './components/TaskInput.vue';
 import TaskList from './components/TaskList.vue';
 
-export default {
-  components: {
-    TaskInput,
-    TaskList
-  },
-  data() {
-    return {
-      tasks: [
-        { id: 1, text: "To study React fundamentals", completed: false },
-        { id: 2, text: "To study React fundamentals", completed: false },
-        { id: 3, text: "To study React fundamentals", completed: false },
-        { id: 4, text: "To study React fundamentals", completed: false },
-      ],
-      nextId: 5,
-    };
-  },
-  computed: {
-    tasksToDo() {
-      return this.tasks.filter((task) => !task.completed);
-    },
-    doneTasks() {
-      return this.tasks.filter((task) => task.completed);
-    },
-  },
-  methods: {
-    addTask(text) {
-      this.tasks.push({
-        id: this.nextId++,
-        text: text,
-        completed: false,
-      });
-    },
-    completeTask(id) {
-      const taskIndex = this.tasks.findIndex((task) => task.id === id);
-      if (taskIndex !== -1) {
-        this.tasks[taskIndex].completed = true;
-      }
-    },
-    deleteTask(id) {
-      this.tasks = this.tasks.filter((task) => task.id !== id);
-    },
-  },
+const tasks = ref([
+  { id: 1, text: "To study React fundamentals", completed: false },
+  { id: 2, text: "To study React fundamentals", completed: false },
+  { id: 3, text: "To study React fundamentals", completed: false },
+  { id: 4, text: "To study React fundamentals", completed: false },
+]);
+
+const nextId = ref(5);
+
+const tasksToDo = computed(() => tasks.value.filter(task => !task.completed));
+const doneTasks = computed(() => tasks.value.filter(task => task.completed));
+
+const addTask = (text) => {
+  tasks.value.push({
+    id: nextId.value++,
+    text: text,
+    completed: false,
+  });
+};
+
+const completeTask = (id) => {
+  const taskIndex = tasks.value.findIndex(task => task.id === id);
+  if (taskIndex !== -1) {
+    tasks.value[taskIndex].completed = true;
+  }
+};
+
+const deleteTask = (id) => {
+  tasks.value = tasks.value.filter(task => task.id !== id);
 };
 </script>
 

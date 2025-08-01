@@ -1,36 +1,38 @@
 <template>
-  <div class="task-item" :class="{ 'done-item': task.completed }">
-    <span :class="task.completed ? 'done-text' : 'task-text'">
-      {{ task.text }}
-    </span>
-    <div class="task-actions">
-      <button 
-        v-if="!task.completed"
-        @click="$emit('complete', task.id)" 
-        class="checkbox"
+  <div class="todo-app__task-item" :class="{ 'todo-app__task-item--done': isDone }">
+    <span :class="isDone ? 'todo-app__task-text--done' : 'todo-app__task-text'">{{ task.text }}</span>
+    <div class="todo-app__task-actions">
+      <button
+        v-if="!isDone"
+        @click="$emit('complete-task')"
+        class="todo-app__checkbox"
       >
-        <img src="@/assets/Group1.svg" alt="Complete task" />
+        <img src="@/assets/Group1.svg" alt="Complete task" class="todo-app__btn-icon" />
       </button>
-      <button @click="$emit('delete', task.id)" class="delete-btn">
-        <img src="@/assets/Group2.svg" alt="Delete task" />
+      <button @click="$emit('delete-task')" class="todo-app__delete-btn">
+        <img src="@/assets/Group2.svg" alt="Delete task" class="todo-app__btn-icon" />
       </button>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    task: {
-      type: Object,
-      required: true
-    }
+<script setup>
+defineProps({
+  task: {
+    type: Object,
+    required: true
+  },
+  isDone: {
+    type: Boolean,
+    default: false
   }
-};
+});
+
+defineEmits(['complete-task', 'delete-task']);
 </script>
 
 <style scoped>
-.task-item {
+.todo-app__task-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -41,12 +43,16 @@ export default {
   margin-bottom: 10px;
 }
 
-.task-text {
+.todo-app__task-item:last-child {
+  border-bottom: none;
+}
+
+.todo-app__task-text {
   color: #9e78cf;
   font-size: 16px;
 }
 
-.done-text {
+.todo-app__task-text--done {
   width: auto;
   height: 19px;
   color: #78cfb0;
@@ -54,48 +60,50 @@ export default {
   text-decoration: line-through;
 }
 
-.task-actions {
+.todo-app__task-actions {
   display: flex;
   gap: 8px;
 }
 
-.checkbox {
-  width: 20px;
-  height: 20px;
+.todo-app__checkbox {
+  width: 22px;
+  height: 22px;
   border: 1px solid #3e3546;
   border-radius: 4px;
-  background: transparent;
   cursor: pointer;
   display: flex;
   align-items: center;
-  margin-left: 8px;
   justify-content: center;
   font-size: 14px;
   color: #9e78cf;
   padding: 0;
 }
 
-.checkbox:hover {
+.todo-app__checkbox:hover {
   border-color: #9e78cf;
   background-color: rgba(158, 120, 207, 0.1);
 }
 
-.delete-btn {
-  width: 20px;
-  height: 20px;
+.todo-app__delete-btn {
+  width: 22px;
+  height: 22px;
   border: none;
   border-radius: 4px;
-  background: transparent;
   cursor: pointer;
   display: flex;
+  margin-left: 8px;
   align-items: center;
   justify-content: center;
   color: #777;
   padding: 0;
 }
 
-.delete-btn:hover {
+.todo-app__delete-btn:hover {
   color: #ff5555;
   background-color: rgba(255, 85, 85, 0.1);
+}
+
+.todo-app__btn-icon {
+  display: block;
 }
 </style>
