@@ -50,7 +50,7 @@ defineEmits(['complete-task', 'delete-task']);
 .todo-app__tasks-section {
   width: 500px;
   padding: 15px 20px;
-  margin: auto;
+  margin: 0 auto;
   font-family: Arial, sans-serif;
   color: white;
   background-color: #1e1a27;
