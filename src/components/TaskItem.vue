@@ -41,6 +41,8 @@ defineEmits(['complete-task', 'delete-task']);
   border-radius: 8px;
   border: 2px solid #2a2438;
   margin-bottom: 10px;
+  height: 67px; 
+  box-sizing: border-box;
 }
 
 .todo-app__task-item:last-child {
