@@ -40,34 +40,6 @@ const content = ref(null);
 const tasksToDo = computed(() => tasks.value.filter(task => !task.completed));
 const doneTasks = computed(() => tasks.value.filter(task => task.completed));
 
-const checkOverflow = () => {
-  nextTick(() => {
-    if (!container.value || !content.value) return;
-    
-    const containerRect = container.value.getBoundingClientRect();
-    const contentRect = content.value.getBoundingClientRect();
-    
-    if (contentRect.height > containerRect.height) {
-      
-      containerHeight.value = `${contentRect.height + 20}px`;
-    } else if (containerHeight.value !== 'auto') {
-     
-      containerHeight.value = 'auto';
-    }
-  });
-};
-
-
-watch([tasksToDo, doneTasks], () => {
-  checkOverflow();
-}, { deep: true });
-
-
-onMounted(() => {
-  checkOverflow();
-  window.addEventListener('resize', checkOverflow);
-});
-
 const addTask = (text) => {
   tasks.value.push({
     id: nextId.value++,
@@ -93,7 +65,7 @@ const deleteTask = (id) => {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, sans-serif;
   width: 583px;
-  min-height: 758px;
+  height: 758px;
   margin: 109px auto;
   padding: 24px;
   background-color: #1d1825;
