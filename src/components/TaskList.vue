@@ -53,7 +53,6 @@ defineEmits(['complete-task', 'delete-task']);
   margin: 0 auto;
   font-family: Arial, sans-serif;
   color: white;
-  background-color: #1e1a27;
   border-radius: 10px;
 }
 </style>
