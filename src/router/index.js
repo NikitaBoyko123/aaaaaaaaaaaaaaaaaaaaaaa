@@ -9,8 +9,8 @@ const routes = [
     component: TodoView
   },
   {
-    path: '/task/:id',
-    name: 'TaskDetail',
+    path: '/todo/:id',
+    name: 'TodoDetail',
     component: TaskDetailView
   }
 ];

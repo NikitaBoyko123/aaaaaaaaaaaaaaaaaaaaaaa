@@ -1,7 +1,7 @@
 <template>
   <div class="todo-app__task-item" :class="{ 'todo-app__task-item--done': isDone }">
     <router-link 
-      :to="'/task/' + task.id" 
+      :to="`/task/${task.id}`"
       class="todo-app__task-link"
       :class="isDone ? 'todo-app__task-text--done' : 'todo-app__task-text'"
     >
