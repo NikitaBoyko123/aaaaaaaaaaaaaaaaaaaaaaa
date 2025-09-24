@@ -1,6 +1,12 @@
 <template>
   <div class="todo-app__task-item" :class="{ 'todo-app__task-item--done': isDone }">
-    <span :class="isDone ? 'todo-app__task-text--done' : 'todo-app__task-text'">{{ task.text }}</span>
+    <router-link 
+      :to="`/task/${task.id}`"
+      class="todo-app__task-link"
+      :class="isDone ? 'todo-app__task-text--done' : 'todo-app__task-text'"
+    >
+      {{ task.text }}
+    </router-link>
     <div class="todo-app__task-actions">
       <button
         v-if="!isDone"
@@ -39,14 +45,20 @@ defineEmits(['complete-task', 'delete-task']);
   background-color: #15101c;
   padding: 22px 20px 23px;
   border-radius: 8px;
-  border: 2px solid #2a2438;
   margin-bottom: 10px;
-  height: 67px; 
+  height: 67px;
   box-sizing: border-box;
 }
 
-.todo-app__task-item:last-child {
-  border-bottom: none;
+.todo-app__task-link {
+  text-decoration: none;
+  flex: 1;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.todo-app__task-link:hover {
+  opacity: 0.8;
 }
 
 .todo-app__task-text {
@@ -68,13 +80,15 @@ defineEmits(['complete-task', 'delete-task']);
 }
 
 .todo-app__checkbox {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border: 1px solid #3e3546;
   border-radius: 4px;
+  background: transparent;
   cursor: pointer;
   display: flex;
   align-items: center;
+  margin-left: 8px;
   justify-content: center;
   font-size: 14px;
   color: #9e78cf;
@@ -87,13 +101,13 @@ defineEmits(['complete-task', 'delete-task']);
 }
 
 .todo-app__delete-btn {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border: none;
   border-radius: 4px;
+  background: transparent;
   cursor: pointer;
   display: flex;
-  margin-left: 8px;
   align-items: center;
   justify-content: center;
   color: #777;
