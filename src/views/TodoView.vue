@@ -45,50 +45,42 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      newTask: "",
-      tasks: [
-        { id: 1, text: "To study React fundamentals", completed: false },
-        { id: 2, text: "To study React fundamentals", completed: false },
-        { id: 3, text: "To study React fundamentals", completed: false },
-        { id: 4, text: "To study React fundamentals", completed: false },
-      ],
-      nextId: 5,
-    };
-  },
-   computed: {
-    tasksToDo() {
-      return this.tasks.filter((task) => !task.completed);
-    },
-    doneTasks() {
-      return this.tasks.filter((task) => task.completed);
-    },
-  },
-  methods: {
-    addTask() {
-      if (this.newTask.trim()) {
-        this.tasks.push({
-          id: this.nextId++,
-          text: this.newTask.trim(),
-          completed: false,
-        });
-        this.newTask = "";
-      }
-    },
-    completeTask(id) {
-      const taskIndex = this.tasks.findIndex((task) => task.id === id);
-      if (taskIndex !== -1) {
-        this.tasks[taskIndex].completed = true;
-      }
-    },
-    deleteTask(id) {
-      this.tasks = this.tasks.filter((task) => task.id !== id);
-    },
-  },
-};
+<script setup>
+import { ref, computed } from 'vue'
+
+const newTask = ref('')
+const tasks = ref([
+  { id: 1, text: "To study React fundamentals", completed: false },
+  { id: 2, text: "To study React fundamentals", completed: false },
+  { id: 3, text: "To study React fundamentals", completed: false },
+  { id: 4, text: "To study React fundamentals", completed: false },
+])
+const nextId = ref(5)
+
+const tasksToDo = computed(() => tasks.value.filter(task => !task.completed))
+const doneTasks = computed(() => tasks.value.filter(task => task.completed))
+
+const addTask = () => {
+  if (newTask.value.trim()) {
+    tasks.value.push({
+      id: nextId.value++,
+      text: newTask.value.trim(),
+      completed: false,
+    })
+    newTask.value = ""
+  }
+}
+
+const completeTask = (id) => {
+  const taskIndex = tasks.value.findIndex(task => task.id === id)
+  if (taskIndex !== -1) {
+    tasks.value[taskIndex].completed = true
+  }
+}
+
+const deleteTask = (id) => {
+  tasks.value = tasks.value.filter(task => task.id !== id)
+}
 </script>
 
 <style scoped>
@@ -97,10 +89,12 @@ export default {
     Ubuntu, Cantarell, sans-serif;
   width: 583px;
   height: 758px;
+  height: auto;
   margin: 0 auto;
   padding: 24px;
   background-color: #1d1825;
   border-radius: 20px;
+  transition: min-height 0.3s ease;
 }
 
 .input-container {
@@ -117,10 +111,10 @@ export default {
   flex: 1;
   padding: 12px 16px;
   font-size: 14px;
-  border: 1px solid #9e78cf; 
+  border: 1px solid #9e78cf;
   border-radius: 8px;
   box-sizing: border-box;
-  outline: none; 
+  outline: none;
   background-color: #15101c;
   color: #ffffff;
   height: 40px;
@@ -180,6 +174,9 @@ export default {
   margin: auto;
   font-family: Arial, sans-serif;
   color: white;
+  border-radius: 10px;
+  height: auto;
+  min-height: auto;
 }
 
 .task-item {
@@ -190,10 +187,12 @@ export default {
   padding: 22px 20px 23px;
   border-radius: 8px;
   margin-bottom: 10px;
+  height: 67px;
+  box-sizing: border-box;
 }
 
 .task-item:last-child {
-  border-bottom: none;
+  margin-bottom: 0;
 }
 
 .task-text {
@@ -252,10 +251,5 @@ export default {
 .delete-btn:hover {
   color: #ff5555;
   background-color: rgba(255, 85, 85, 0.1);
-}
-
-.task-input:focus {
-  border: 1px solid #9e78cf;
-  outline: none;
 }
 </style>
