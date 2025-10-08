@@ -22,6 +22,9 @@
 
     <div class="section-title-tasks">Tasks to do - {{ tasksToDo.length }}</div>
     <div class="tasks-section">
+      <div v-if="tasksToDo.length === 0 && !loading" class="empty-state">
+        No tasks to do. Add a new task above!
+      </div>
       <div class="task-item" v-for="task in tasksToDo" :key="task.id">
         <router-link 
           :to="`/task/${task.id}`"
@@ -44,6 +47,9 @@
       Done - {{ doneTasks.length }}
     </div>
     <div class="tasks-section">
+      <div v-if="doneTasks.length === 0 && !loading" class="empty-state">
+        No completed tasks yet.
+      </div>
       <div v-for="task in doneTasks" class="task-item done-item" :key="task.id">
         <router-link 
           :to="`/task/${task.id}`"
@@ -67,10 +73,12 @@
 import { ref, computed, onMounted } from 'vue'
 import { todosApi } from '@/api/todos'
 
+const MY_USER_ID = 1 
 const todos = ref([])
 const loading = ref(false)
 const error = ref(null)
 const newTask = ref('')
+const initialTasksCreated = ref(false)
 
 const createInitialTasks = async () => {
   const initialTasks = [
@@ -81,29 +89,31 @@ const createInitialTasks = async () => {
   ]
 
   try {
-    loading.value = true
     for (const task of initialTasks) {
       await todosApi.createTodo({
         ...task,
-        userId: 1
+        userId: MY_USER_ID
       })
     }
-    await fetchTodos()
+    initialTasksCreated.value = true
+    console.log('Initial tasks created successfully')
   } catch (err) {
-    error.value = err.message
     console.error('Error creating initial tasks:', err)
-  } finally {
-    loading.value = false
   }
 }
-
 
 const fetchTodos = async () => {
   loading.value = true
   error.value = null
   try {
     const response = await todosApi.getAllTodos()
-    todos.value = response.data.filter(task => task.userId === 1)
+    todos.value = response.data.filter(task => task.userId === MY_USER_ID)
+    
+    if (todos.value.length === 0 && !initialTasksCreated.value) {
+      await createInitialTasks()
+      const newResponse = await todosApi.getAllTodos()
+      todos.value = newResponse.data.filter(task => task.userId === MY_USER_ID)
+    }
   } catch (err) {
     error.value = err.message
     console.error('Error fetching todos:', err)
@@ -112,11 +122,8 @@ const fetchTodos = async () => {
   }
 }
 
-onMounted(async () => {
-  await fetchTodos()
-  if (todos.value.length === 0) {
-    await createInitialTasks()
-  }
+onMounted(() => {
+  fetchTodos()
 })
 
 const tasksToDo = computed(() => todos.value.filter(task => !task.completed))
@@ -128,10 +135,10 @@ const addTask = async () => {
       await todosApi.createTodo({
         title: newTask.value.trim(),
         completed: false,
-        userId: 1
+        userId: MY_USER_ID
       })
       newTask.value = ""
-      await fetchTodos()
+      await fetchTodos() 
     } catch (err) {
       console.error('Failed to create task:', err)
     }
@@ -146,7 +153,7 @@ const completeTask = async (id) => {
         ...task,
         completed: true
       })
-      await fetchTodos()
+      await fetchTodos() 
     }
   } catch (err) {
     console.error('Failed to complete task:', err)
@@ -156,7 +163,7 @@ const completeTask = async (id) => {
 const deleteTask = async (id) => {
   try {
     await todosApi.deleteTodo(id)
-    await fetchTodos()
+    await fetchTodos() 
   } catch (err) {
     console.error('Failed to delete task:', err)
   }
@@ -164,6 +171,13 @@ const deleteTask = async (id) => {
 </script>
 
 <style scoped>
+
+.empty-state {
+  text-align: center;
+  color: #777;
+  padding: 20px;
+  font-style: italic;
+}
 .todo-app {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, sans-serif;
