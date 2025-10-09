@@ -6,7 +6,7 @@
       </router-link>
       
       <div v-if="loading" class="loading">
-        Loading task details...
+        Loading task details from JSONPlaceholder...
       </div>
 
       <div v-else-if="error" class="error">
@@ -30,13 +30,14 @@
           
           <div class="task-meta">
             <span class="task-user">User ID: {{ task.userId }}</span>
+            <span class="task-source">Source: JSONPlaceholder</span>
           </div>
         </div>
       </div>
 
       <div v-else class="not-found">
         <h2>Task not found</h2>
-        <p>Task with ID {{ $route.params.id }} does not exist.</p>
+        <p>Task with ID {{ $route.params.id }} does not exist in JSONPlaceholder.</p>
       </div>
     </div>
   </div>
@@ -60,7 +61,7 @@ const fetchTodoById = async (id) => {
     task.value = response.data
   } catch (err) {
     error.value = err.message
-    console.error('Error fetching todo:', err)
+    console.error('Error fetching todo from JSONPlaceholder:', err)
   } finally {
     loading.value = false
   }

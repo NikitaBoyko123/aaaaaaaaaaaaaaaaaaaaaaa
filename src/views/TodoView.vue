@@ -13,7 +13,7 @@
     </div>
 
     <div v-if="loading" class="loading">
-      Loading todos...
+      Loading todos from JSONPlaceholder...
     </div>
 
     <div v-if="error" class="error">
@@ -73,50 +73,28 @@
 import { ref, computed, onMounted } from 'vue'
 import { todosApi } from '@/api/todos'
 
-const MY_USER_ID = 1 
 const todos = ref([])
 const loading = ref(false)
 const error = ref(null)
 const newTask = ref('')
-const initialTasksCreated = ref(false)
-
-const createInitialTasks = async () => {
-  const initialTasks = [
-    { title: "To study React fundamentals", completed: false },
-    { title: "To study React fundamentals", completed: false },
-    { title: "To study React fundamentals", completed: false },
-    { title: "To study React fundamentals", completed: false }
-  ]
-
-  try {
-    for (const task of initialTasks) {
-      await todosApi.createTodo({
-        ...task,
-        userId: MY_USER_ID
-      })
-    }
-    initialTasksCreated.value = true
-    console.log('Initial tasks created successfully')
-  } catch (err) {
-    console.error('Error creating initial tasks:', err)
-  }
-}
 
 const fetchTodos = async () => {
   loading.value = true
   error.value = null
   try {
     const response = await todosApi.getAllTodos()
-    todos.value = response.data.filter(task => task.userId === MY_USER_ID)
+    const serverTodos = response.data.slice(0, 10)
     
-    if (todos.value.length === 0 && !initialTasksCreated.value) {
-      await createInitialTasks()
-      const newResponse = await todosApi.getAllTodos()
-      todos.value = newResponse.data.filter(task => task.userId === MY_USER_ID)
-    }
+    todos.value = serverTodos.map(task => ({
+      id: task.id,
+      title: task.title,
+      completed: task.completed,
+      userId: task.userId,
+      _original: task
+    }))
   } catch (err) {
     error.value = err.message
-    console.error('Error fetching todos:', err)
+    console.error('Error fetching todos from JSONPlaceholder:', err)
   } finally {
     loading.value = false
   }
@@ -129,55 +107,38 @@ onMounted(() => {
 const tasksToDo = computed(() => todos.value.filter(task => !task.completed))
 const doneTasks = computed(() => todos.value.filter(task => task.completed))
 
-const addTask = async () => {
+const addTask = () => {
   if (newTask.value.trim()) {
-    try {
-      await todosApi.createTodo({
-        title: newTask.value.trim(),
-        completed: false,
-        userId: MY_USER_ID
-      })
-      newTask.value = ""
-      await fetchTodos() 
-    } catch (err) {
-      console.error('Failed to create task:', err)
-    }
+    const newId = Math.max(...todos.value.map(t => t.id), 0) + 1
+    todos.value.push({
+      id: newId,
+      title: newTask.value.trim(),
+      completed: false,
+      userId: 1 
+    })
+    newTask.value = ""
   }
 }
 
-const completeTask = async (id) => {
-  try {
-    const task = todos.value.find(t => t.id === id)
-    if (task) {
-      await todosApi.updateTodo(id, {
-        ...task,
-        completed: true
-      })
-      await fetchTodos() 
-    }
-  } catch (err) {
-    console.error('Failed to complete task:', err)
+const completeTask = (id) => {
+  const taskIndex = todos.value.findIndex(task => task.id === id)
+  if (taskIndex !== -1) {
+    todos.value[taskIndex].completed = true
   }
 }
 
-const deleteTask = async (id) => {
-  try {
-    await todosApi.deleteTodo(id)
-    await fetchTodos() 
-  } catch (err) {
-    console.error('Failed to delete task:', err)
-  }
+const deleteTask = (id) => {
+  todos.value = todos.value.filter(task => task.id !== id)
 }
 </script>
 
 <style scoped>
-
 .empty-state {
   text-align: center;
   color: #777;
   padding: 20px;
-  font-style: italic;
 }
+
 .todo-app {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, sans-serif;
@@ -284,7 +245,6 @@ const deleteTask = async (id) => {
   margin: auto;
   font-family: Arial, sans-serif;
   color: white;
-  background-color: #1e1a27;
   border-radius: 10px;
   height: auto;
   min-height: auto;
@@ -297,7 +257,6 @@ const deleteTask = async (id) => {
   background-color: #15101c;
   padding: 22px 20px 23px;
   border-radius: 8px;
-  border: 2px solid #2a2438;
   margin-bottom: 10px;
   height: 67px;
   box-sizing: border-box;
