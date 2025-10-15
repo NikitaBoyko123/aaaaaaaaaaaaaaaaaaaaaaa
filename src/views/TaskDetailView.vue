@@ -33,11 +33,23 @@
             <span class="task-source">Source: JSONPlaceholder</span>
           </div>
         </div>
+
+        <div class="task-info">
+          <h3>Task Information:</h3>
+          <ul>
+            <li><strong>ID:</strong> {{ task.id }}</li>
+            <li><strong>Title:</strong> {{ task.title }}</li>
+            <li><strong>Status:</strong> {{ task.completed ? 'Completed' : 'Not Completed' }}</li>
+            <li><strong>User ID:</strong> {{ task.userId }}</li>
+            <li><strong>API Source:</strong> JSONPlaceholder</li>
+          </ul>
+        </div>
       </div>
 
       <div v-else class="not-found">
         <h2>Task not found</h2>
         <p>Task with ID {{ $route.params.id }} does not exist in JSONPlaceholder.</p>
+        <p>JSONPlaceholder has tasks with IDs from 1 to 200.</p>
       </div>
     </div>
   </div>
@@ -56,12 +68,16 @@ const error = ref(null)
 const fetchTodoById = async (id) => {
   loading.value = true
   error.value = null
+  task.value = null
+  
   try {
+    console.log('Fetching task with ID:', id)
     const response = await todosApi.getTodoById(id)
+    console.log('Task data received:', response.data)
     task.value = response.data
   } catch (err) {
-    error.value = err.message
-    console.error('Error fetching todo from JSONPlaceholder:', err)
+    error.value = `Failed to load task: ${err.message}`
+    console.error('Error fetching todo:', err)
   } finally {
     loading.value = false
   }
@@ -69,13 +85,25 @@ const fetchTodoById = async (id) => {
 
 const loadTask = async () => {
   const taskId = parseInt(route.params.id)
-  if (taskId) {
+  console.log('Route params ID:', route.params.id, 'Parsed ID:', taskId)
+  
+  if (taskId && taskId >= 1 && taskId <= 200) {
     await fetchTodoById(taskId)
+  } else {
+    error.value = `Invalid task ID: ${taskId}. JSONPlaceholder has tasks with IDs from 1 to 200.`
+    task.value = null
   }
 }
 
-onMounted(loadTask)
-watch(() => route.params.id, loadTask)
+onMounted(() => {
+  console.log('TaskDetailView mounted')
+  loadTask()
+})
+
+watch(() => route.params.id, (newId) => {
+  console.log('Route ID changed to:', newId)
+  loadTask()
+})
 </script>
 
 <style scoped>
@@ -115,6 +143,7 @@ watch(() => route.params.id, loadTask)
   background-color: #1d1825;
   border-radius: 20px;
   border: 2px solid #2a2438;
+  margin-bottom: 20px;
 }
 
 .loading {
@@ -185,6 +214,39 @@ watch(() => route.params.id, loadTask)
   justify-content: space-between;
   color: #777;
   font-size: 14px;
+}
+
+.task-info {
+  background-color: #15101c;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #2a2438;
+  margin-top: 20px;
+}
+
+.task-info h3 {
+  color: #9e78cf;
+  margin-bottom: 15px;
+}
+
+.task-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.task-info li {
+  color: #ffffff;
+  padding: 8px 0;
+  border-bottom: 1px solid #2a2438;
+}
+
+.task-info li:last-child {
+  border-bottom: none;
+}
+
+.task-info strong {
+  color: #9e78cf;
 }
 
 .not-found {

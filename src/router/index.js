@@ -1,6 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import TodoView from '@/views/TodoView.vue';
-import TaskDetailView from '@/views/TaskDetailView.vue';
+import { createRouter, createWebHistory } from 'vue-router'
+import TodoView from '@/views/TodoView.vue'
+import TaskDetailView from '@/views/TaskDetailView.vue'
 
 const routes = [
   {
@@ -9,8 +9,8 @@ const routes = [
     component: TodoView
   },
   {
-    path: '/todo/:id',
-    name: 'TodoDetail',
+    path: '/task/:id',
+    name: 'TaskDetail',
     component: TaskDetailView
   }
 ];
@@ -18,6 +18,6 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes
-});
+})
 
-export default router;
+export default router

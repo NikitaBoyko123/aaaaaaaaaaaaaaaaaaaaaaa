@@ -137,6 +137,7 @@ const deleteTask = (id) => {
   text-align: center;
   color: #777;
   padding: 20px;
+  font-style: italic;
 }
 
 .todo-app {
