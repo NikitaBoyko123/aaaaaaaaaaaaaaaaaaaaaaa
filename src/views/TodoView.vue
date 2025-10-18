@@ -16,9 +16,7 @@
       Loading todos from JSONPlaceholder...
     </div>
 
-    <div v-if="error" class="error">
-      Error: {{ error }}
-    </div>
+    <div v-if="error" class="error">Error: {{ error }}</div>
 
     <div class="section-title-tasks">Tasks to do - {{ tasksToDo.length }}</div>
     <div class="tasks-section">
@@ -26,10 +24,7 @@
         No tasks to do. Add a new task above!
       </div>
       <div class="task-item" v-for="task in tasksToDo" :key="task.id">
-        <router-link 
-          :to="`/task/${task.id}`"
-          class="task-text"
-        >
+        <router-link :to="`/task/${task.id}`" class="task-text">
           {{ task.title }}
         </router-link>
         <div class="task-actions">
@@ -43,18 +38,13 @@
       </div>
     </div>
 
-    <div class="section-title-done">
-      Done - {{ doneTasks.length }}
-    </div>
+    <div class="section-title-done">Done - {{ doneTasks.length }}</div>
     <div class="tasks-section">
       <div v-if="doneTasks.length === 0 && !loading" class="empty-state">
         No completed tasks yet.
       </div>
       <div v-for="task in doneTasks" class="task-item done-item" :key="task.id">
-        <router-link 
-          :to="`/task/${task.id}`"
-          class="done-text"
-        >
+        <router-link :to="`/task/${task.id}`" class="done-text">
           {{ task.title }}
         </router-link>
         <button @click="deleteTask(task.id)" class="delete-btn">
@@ -70,66 +60,65 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { todosApi } from '@/api/todos'
+import { ref, computed, onMounted } from "vue";
+import { todosApi } from "@/api/todos";
 
-const todos = ref([])
-const loading = ref(false)
-const error = ref(null)
-const newTask = ref('')
+const todos = ref([]);
+const loading = ref(false);
+const error = ref(null);
+const newTask = ref("");
 
 const fetchTodos = async () => {
-  loading.value = true
-  error.value = null
+  loading.value = true;
+  error.value = null;
   try {
-    const response = await todosApi.getAllTodos()
-    const serverTodos = response.data.slice(0, 10)
-    
-    todos.value = serverTodos.map(task => ({
+    const response = await todosApi.getAllTodos();
+    const serverTodos = response.data.slice(0, 10);
+
+    todos.value = serverTodos.map((task) => ({
       id: task.id,
       title: task.title,
       completed: task.completed,
       userId: task.userId,
-      _original: task
-    }))
+    }));
   } catch (err) {
-    error.value = err.message
-    console.error('Error fetching todos from JSONPlaceholder:', err)
+    error.value = err.message;
+    console.error("Error fetching todos from JSONPlaceholder:", err);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 onMounted(() => {
-  fetchTodos()
-})
+  fetchTodos();
+});
 
-const tasksToDo = computed(() => todos.value.filter(task => !task.completed))
-const doneTasks = computed(() => todos.value.filter(task => task.completed))
+const tasksToDo = computed(() => todos.value.filter((task) => !task.completed));
+const doneTasks = computed(() => todos.value.filter((task) => task.completed));
 
 const addTask = () => {
   if (newTask.value.trim()) {
-    const newId = Math.max(...todos.value.map(t => t.id), 0) + 1
+    const newId = Math.max(...todos.value.map((t) => t.id), 0) + 1;
     todos.value.push({
       id: newId,
       title: newTask.value.trim(),
       completed: false,
-      userId: 1 
-    })
-    newTask.value = ""
+      userId: 1,
+    });
+    newTask.value = "";
   }
-}
+};
 
 const completeTask = (id) => {
-  const taskIndex = todos.value.findIndex(task => task.id === id)
+  const taskIndex = todos.value.findIndex((task) => task.id === id);
   if (taskIndex !== -1) {
-    todos.value[taskIndex].completed = true
+    todos.value[taskIndex].completed = true;
   }
-}
+};
 
 const deleteTask = (id) => {
-  todos.value = todos.value.filter(task => task.id !== id)
-}
+  todos.value = todos.value.filter((task) => task.id !== id);
+};
 </script>
 
 <style scoped>
@@ -153,7 +142,8 @@ const deleteTask = (id) => {
   transition: min-height 0.3s ease;
 }
 
-.loading, .error {
+.loading,
+.error {
   text-align: center;
   color: #ffffff;
   padding: 20px;
