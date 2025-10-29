@@ -59,66 +59,71 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from "vue";
-import { todosApi } from "@/api/todos";
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { todosApi } from '@/api/todos'
+import type { Todo, LocalTodo } from '@/types/todo'
 
-const todos = ref([]);
-const loading = ref(false);
-const error = ref(null);
-const newTask = ref("");
+const todos = ref<LocalTodo[]>([])
+const loading = ref<boolean>(false)
+const error = ref<string | null>(null)
+const newTask = ref<string>('')
 
-const fetchTodos = async () => {
-  loading.value = true;
-  error.value = null;
+const fetchTodos = async (): Promise<void> => {
+  loading.value = true
+  error.value = null
   try {
-    const response = await todosApi.getAllTodos();
-    const serverTodos = response.data.slice(0, 10);
-
-    todos.value = serverTodos.map((task) => ({
-      id: task.id,
-      title: task.title,
-      completed: task.completed,
-      userId: task.userId,
-    }));
+    const response = await todosApi.getAllTodos()
+    const serverTodos = response.data.slice(0, 10)
+    
+    todos.value = serverTodos.map((task: Todo) => ({
+      ...task,
+      _original: task
+    }))
   } catch (err) {
-    error.value = err.message;
-    console.error("Error fetching todos from JSONPlaceholder:", err);
+    error.value = err instanceof Error ? err.message : 'Unknown error occurred'
+    console.error('Error fetching todos from JSONPlaceholder:', err)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
 onMounted(() => {
-  fetchTodos();
-});
+  fetchTodos()
+})
 
-const tasksToDo = computed(() => todos.value.filter((task) => !task.completed));
-const doneTasks = computed(() => todos.value.filter((task) => task.completed));
+const tasksToDo = computed((): LocalTodo[] => {
+  return todos.value.filter(task => !task.completed)
+})
 
-const addTask = () => {
+const doneTasks = computed((): LocalTodo[] => {
+  return todos.value.filter(task => task.completed)
+})
+
+
+const addTask = (): void => {
   if (newTask.value.trim()) {
-    const newId = Math.max(...todos.value.map((t) => t.id), 0) + 1;
+    const newId = Math.max(...todos.value.map(t => t.id), 0) + 1
     todos.value.push({
       id: newId,
       title: newTask.value.trim(),
       completed: false,
-      userId: 1,
-    });
-    newTask.value = "";
+      userId: 1 
+    })
+    newTask.value = ""
   }
-};
+}
 
-const completeTask = (id) => {
-  const taskIndex = todos.value.findIndex((task) => task.id === id);
+const completeTask = (id: number): void => {
+  const taskIndex = todos.value.findIndex(task => task.id === id)
   if (taskIndex !== -1) {
-    todos.value[taskIndex].completed = true;
+    todos.value[taskIndex].completed = true
   }
-};
+}
 
-const deleteTask = (id) => {
-  todos.value = todos.value.filter((task) => task.id !== id);
-};
+const deleteTask = (id: number): void => {
+  todos.value = todos.value.filter(task => task.id !== id)
+}
 </script>
 
 <style scoped>

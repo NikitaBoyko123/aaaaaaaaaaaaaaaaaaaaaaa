@@ -71,56 +71,57 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, watch, computed } from "vue";
-import { useRoute } from "vue-router";
-import { todosApi } from "@/api/todos";
+<script setup lang="ts">
+import { ref, onMounted, watch, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { todosApi } from '@/api/todos'
+import type { Todo } from '@/types/todo'
 
-const route = useRoute();
-const task = ref(null);
-const loading = ref(false);
-const error = ref(null);
+const route = useRoute()
+const task = ref<Todo | null>(null)
+const loading = ref<boolean>(false)
+const error = ref<string | null>(null)
 
-const statusText = computed(() => {
-  return task.value?.completed ? "Completed" : "In Progress";
-});
+const statusText = computed((): string => {
+  return task.value?.completed ? 'Completed' : 'In Progress'
+})
 
-const statusBadgeClass = computed(() => {
+const statusBadgeClass = computed((): Record<string, boolean> => {
   return {
-    "status-badge--todo": !task.value?.completed,
-    "status-badge--done": task.value?.completed,
-  };
-});
+    'status-badge--todo': !task.value?.completed,
+    'status-badge--done': !!task.value?.completed
+  }
+})
 
-const fetchTodoById = async (id) => {
-  loading.value = true;
-  error.value = null;
-  task.value = null;
-
+const fetchTodoById = async (id: number): Promise<void> => {
+  loading.value = true
+  error.value = null
+  task.value = null
+  
   try {
-    const response = await todosApi.getTodoById(id);
-    task.value = response.data;
+    const response = await todosApi.getTodoById(id)
+    task.value = response.data
   } catch (err) {
-    error.value = `Failed to load task: ${err.message}`;
-    console.error("Error fetching todo:", err);
+    error.value = err instanceof Error ? `Failed to load task: ${err.message}` : 'Unknown error occurred'
+    console.error('Error fetching todo:', err)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
-const loadTask = async () => {
-  const taskId = parseInt(route.params.id);
-
+const loadTask = async (): Promise<void> => {
+  const taskId = parseInt(route.params.id as string)
+  
   if (taskId && taskId >= 1) {
-    await fetchTodoById(taskId);
+    await fetchTodoById(taskId)
   } else {
-    error.value = `Invalid task ID: ${taskId}. Task ID must be a positive number.`;
-    task.value = null;
+    error.value = `Invalid task ID: ${taskId}. Task ID must be a positive number.`
+    task.value = null
   }
-};
+}
 
-onMounted(loadTask);
-watch(() => route.params.id, loadTask);
+onMounted(loadTask)
+watch(() => route.params.id, loadTask)
 </script>
 
 <style scoped>
