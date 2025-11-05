@@ -1,5 +1,5 @@
 <template>
-  <div class="todo-app__section">
+  <div>
     <div class="todo-app__section-title">{{ title }} - {{ tasks.length }}</div>
     <div class="todo-app__tasks-section">
       <TaskItem
@@ -14,25 +14,20 @@
   </div>
 </template>
 
-<script setup>
-import TaskItem from './TaskItem.vue';
+<script setup lang="ts">
+import TaskItem from './TaskItem.vue'
+import type { LocalTodo } from '@/types/todo'
 
-defineProps({
-  tasks: {
-    type: Array,
-    required: true
-  },
-  title: {
-    type: String,
-    required: true
-  },
-  isDone: {
-    type: Boolean,
-    default: false
-  }
-});
+defineProps<{
+  tasks: LocalTodo[]
+  title: string
+  isDone?: boolean
+}>()
 
-defineEmits(['complete-task', 'delete-task']);
+defineEmits<{
+  (e: 'complete-task', id: number): void
+  (e: 'delete-task', id: number): void
+}>()
 </script>
 
 <style scoped>

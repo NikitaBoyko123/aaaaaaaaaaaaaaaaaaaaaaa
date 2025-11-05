@@ -79,21 +79,21 @@ import type { Todo } from '@/types/todo'
 
 const route = useRoute()
 const task = ref<Todo | null>(null)
-const loading = ref<boolean>(false)
+const loading = ref(false)
 const error = ref<string | null>(null)
 
-const statusText = computed((): string => {
+const statusText = computed(() => {
   return task.value?.completed ? 'Completed' : 'In Progress'
 })
 
-const statusBadgeClass = computed((): Record<string, boolean> => {
+const statusBadgeClass = computed(() => {
   return {
     'status-badge--todo': !task.value?.completed,
     'status-badge--done': !!task.value?.completed
   }
 })
 
-const fetchTodoById = async (id: number): Promise<void> => {
+const fetchTodoById = async (id: number) => {
   loading.value = true
   error.value = null
   task.value = null
@@ -109,7 +109,7 @@ const fetchTodoById = async (id: number): Promise<void> => {
   }
 }
 
-const loadTask = async (): Promise<void> => {
+const loadTask = async () => {
   const taskId = parseInt(route.params.id as string)
   
   if (taskId && taskId >= 1) {

@@ -12,18 +12,20 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
+<script setup lang="ts">
+import { ref } from 'vue'
 
-const newTask = ref('');
-const emit = defineEmits(['add-task']);
+const newTask = ref('')
+const emit = defineEmits<{
+  (e: 'add-task', text: string): void
+}>()
 
 const addTask = () => {
   if (newTask.value.trim()) {
-    emit('add-task', newTask.value.trim());
-    newTask.value = "";
+    emit('add-task', newTask.value.trim())
+    newTask.value = ""
   }
-};
+}
 </script>
 
 <style scoped>

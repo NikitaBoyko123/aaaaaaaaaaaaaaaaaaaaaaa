@@ -6,9 +6,9 @@ export interface Todo {
 }
 
 export interface LocalTodo extends Todo {
-  _original?: Todo; 
+  text: string; 
+  _original?: Todo;
 }
-
 
 export interface CreateTodoRequest {
   title: string;
@@ -24,4 +24,15 @@ export interface ApiResponse<T> {
   data: T;
   status: number;
   statusText: string;
+}
+
+export interface TaskItemProps {
+  task: LocalTodo;
+  isDone: boolean;
+}
+
+export interface TaskListProps {
+  tasks: LocalTodo[];
+  title: string;
+  isDone?: boolean;
 }
