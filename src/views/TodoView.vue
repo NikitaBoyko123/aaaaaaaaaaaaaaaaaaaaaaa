@@ -26,7 +26,7 @@ import TaskList from '@/components/TaskList.vue'
 import type { Todo, LocalTodo } from '@/types/todo'
 
 
-const todos_limit = 10
+const TODOS_LIMIT = 10
 const todos = ref<LocalTodo[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
@@ -36,7 +36,7 @@ const fetchTodos = async () => {
   error.value = null
   try {
     const response = await todosApi.getAllTodos()
-    const serverTodos = response.data.slice(0, todos_limit)
+    const serverTodos = response.data.slice(0, TODOS_LIMIT)
     
     todos.value = serverTodos.map((task: Todo) => ({
       id: task.id,
