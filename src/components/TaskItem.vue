@@ -22,19 +22,18 @@
   </div>
 </template>
 
-<script setup>
-defineProps({
-  task: {
-    type: Object,
-    required: true
-  },
-  isDone: {
-    type: Boolean,
-    default: false
-  }
-});
+<script setup lang="ts">
+import type { LocalTodo } from '@/types/todo'
 
-defineEmits(['complete-task', 'delete-task']);
+defineProps<{
+  task: LocalTodo
+  isDone: boolean
+}>()
+
+defineEmits<{
+  (e: 'complete-task'): void
+  (e: 'delete-task'): void
+}>()
 </script>
 
 <style scoped>

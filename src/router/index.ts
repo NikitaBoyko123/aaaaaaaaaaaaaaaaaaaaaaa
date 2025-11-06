@@ -13,7 +13,7 @@ const routes = [
     name: 'TaskDetail',
     component: TaskDetailView
   }
-];
+]
 
 const router = createRouter({
   history: createWebHistory(),
